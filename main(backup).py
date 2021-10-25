@@ -12,14 +12,12 @@ warehouse_MSK = 0
 warehouse_SPB = 0
 warehouse_NSB = 0
 
-with open("NNZ_IN.htm", encoding="utf8") as f:
+with open("EDS-408A.htm", encoding="utf8") as f:
     page = BeautifulSoup(f, "lxml")
 
-page_list = page.find_all("div", class_ = "catcard_desc")
+page_list = page.find_all("li")
+model = page.find("h1", class_ = "pagetitle")
 
-# TMP: try to work with the first DIV
-model = page_list[0].find_all("meta", itemprop = "model")
-model = re.search("content=\"\w+\"", str(model))
 print(model)
 
 # TODO: Create the pandas table and insert the values
@@ -38,9 +36,9 @@ def find_stock(pattern):
             qty = re.findall('[0-9][0-9]+\+', str(page_list[i])) or re.findall('[0-9]', str(page_list[i]))
             return qty
 
-# warehouse_MSK = find_stock(MSK)
-# warehouse_SPB = find_stock(SPB)
-# warehouse_NSB = find_stock(NSB)
+warehouse_MSK = find_stock(MSK)
+warehouse_SPB = find_stock(SPB)
+warehouse_NSB = find_stock(NSB)
 
 
 ############## extrenal request ##############
