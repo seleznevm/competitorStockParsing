@@ -17,9 +17,11 @@ with open("NNZ_IN.htm", encoding="utf8") as f:
 
 page_list = page.find_all("div", class_ = "catcard_desc")
 
-# TMP: try to work with the first DIV
+# TMP: getting the model name
 model = page_list[0].find_all("meta", itemprop = "model")
-model = re.search("content=\"\w+\"", str(model))
+model = re.search("\".+?\"", str(model))
+model = model.group()
+model = re.sub("\"", "", str(model))
 print(model)
 
 # TODO: Create the pandas table and insert the values
