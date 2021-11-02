@@ -6,15 +6,16 @@ from bs4 import BeautifulSoup
 #TODO: Get data to a variable
 
 ############## internal request ##############
-# with open("NNZ_IN.htm", encoding="utf8") as f:
-#     page = BeautifulSoup(f, "lxml")
+with open("NNZ_IN.htm", encoding="utf8") as f:
+    page = BeautifulSoup(f, "lxml")
 
 ############## extrenal request ##############
-url = "https://nnz-ipc.ru/catalogue/comm/ethernet/?pa=300&sort=available"
-r = requests.get(url)
-page = BeautifulSoup(r.text, "lxml")
+# url = "https://nnz-ipc.ru/catalogue/comm/ethernet/?pa=300&sort=available"
+# r = requests.get(url)
+# page = BeautifulSoup(r.text, "lxml")
 
 WH_List = []
+model_list = []
 page_list = page.find_all("div", class_ = "catcard_desc")
 for n in range(0, len(page_list)):
     # TMP: getting the model name
@@ -31,10 +32,14 @@ for n in range(0, len(page_list)):
         qty = page_warehouse[w].b.children
         for child in qty:
             qty = child
-        dict = {"Модель": str(model), "Склад": str(warehouse), "Количество": str(qty)}
+        if warehouse == "Замена от производителя":
+            break
+        dict = {"Склад": str(warehouse), "Количество": str(qty)}
         WH_List.append(dict)
+        model_list.append(model)
 
 
-df = pd.DataFrame(WH_List, columns=["Модель", "Склад", "Количество"], dtype="string")
-df.to_excel("info.xlsx")
+df = pd.DataFrame(WH_List, index= model_list, columns= ["Склад", "Количество"], dtype="string")
+df.index.name = "Модель"
+df.to_excel("info2.xlsx")
 print(df)
