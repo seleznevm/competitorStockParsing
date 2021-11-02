@@ -3,39 +3,38 @@ import lxml
 import pandas as pd
 import re
 from bs4 import BeautifulSoup
+#TODO: Get data to a variable
 
-with open("NNZ_IN.htm", encoding="utf8") as f:
-    page = BeautifulSoup(f, "lxml")
-
-page_list = page.find_all("div", class_ = "catcard_desc")
-
-# TMP: getting the model name
-page_tmp = page_list[0].find_all("meta", itemprop = "model")
-model = re.search("\".+?\"", str(page_tmp))
-model = model.group()
-model = re.sub("\"", "", str(model))
-
-#getting the warehouse name and q'ty
-page_tmp = page_list[0].find("li")
-warehouse = page_tmp.span.children
-for child in warehouse:
-    warehouse = child
-
-qty = page_tmp.b.children
-for child in qty:
-    qty = child
-#TODO: 1. continue to list page_tmp and find warehouses and qties
-
-# TODO: Create the pandas table and insert the values
-try:
-    data = pd.read_excel(r'NNZ_moxa_warehouse.xlsx')
-except:
-    print("Can't read the file")
-
+############## internal request ##############
+# with open("NNZ_IN.htm", encoding="utf8") as f:
+#     page = BeautifulSoup(f, "lxml")
 
 ############## extrenal request ##############
-# url = "https://moxa.ru/shop/ethernet/unmanaged/fast_ethernet/eds-200a/eds-205a/eds-205a/"
-# r = requests.get(url)
-# soup = BeautifulSoup(r.text, "lxml")
-# warehouse = soup.find_all("div", class_ = "avail_popup")
-# print(warehouse)
+url = "https://nnz-ipc.ru/catalogue/comm/ethernet/?pa=300&sort=available"
+r = requests.get(url)
+page = BeautifulSoup(r.text, "lxml")
+
+WH_List = []
+page_list = page.find_all("div", class_ = "catcard_desc")
+for n in range(0, len(page_list)):
+    # TMP: getting the model name
+    page_model = page_list[n].find_all("meta", itemprop = "model")
+    model = re.search("\".+?\"", str(page_model))
+    model = model.group()
+    model = re.sub("\"", "", str(model)) # here we got a clear model name
+    page_warehouse = page_list[n].find_all("li") # now let's deal with the stock information
+    for w in range(0,len(page_warehouse)):
+        #getting the warehouse name
+        warehouse = page_warehouse[w].span.children  #TODO: 2. think how to pass the EOL models
+        for child in warehouse:
+            warehouse = child # here we got the clear city name of the warehouse
+        qty = page_warehouse[w].b.children
+        for child in qty:
+            qty = child
+        dict = {"Модель": str(model), "Склад": str(warehouse), "Количество": str(qty)}
+        WH_List.append(dict)
+
+
+df = pd.DataFrame(WH_List, columns=["Модель", "Склад", "Количество"], dtype="string")
+df.to_excel("info.xlsx")
+print(df)
