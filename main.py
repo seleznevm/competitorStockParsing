@@ -3,7 +3,18 @@ import lxml
 import pandas as pd
 import re
 from bs4 import BeautifulSoup
-#TODO: Get data to a variable
+
+NNZ_CONTROLLERS = "https://nnz-ipc.ru/catalogue/automation/controllers/?pa=100"
+NNZ_MODULES = "https://nnz-ipc.ru/catalogue/automation/io/?pa=100"
+NNZ_DAQ_BOARDS = "https://nnz-ipc.ru/catalogue/automation/io_boards/?pa=100"
+NNZ_EXP_UNITS = "https://nnz-ipc.ru/catalogue/automation/extension_chassis/?pa=100"
+NNZ_SPEC_MODELS = "https://nnz-ipc.ru/catalogue/automation/specialized_modules/?pa=100"
+NNZ_DB_BOARDS = "https://nnz-ipc.ru/catalogue/automation/specialized_boards/?pa=100"
+NNZ_HMI = "https://nnz-ipc.ru/catalogue/automation/hmi/?pa=100"
+NNZ_SENSORS = "https://nnz-ipc.ru/catalogue/automation/remote_data_logger/?pa=100"
+NNZ_ACCESSORIES = "https://nnz-ipc.ru/catalogue/automation/automation_accesories/?pa=100"
+
+ACS_list = [NNZ_CONTROLLERS, NNZ_MODULES, NNZ_DAQ_BOARDS, NNZ_EXP_UNITS, NNZ_SPEC_MODELS, NNZ_DB_BOARDS, NNZ_HMI, NNZ_SENSORS, NNZ_ACCESSORIES]
 
 ############## internal request ##############
 with open("NNZ_IN.htm", encoding="utf8") as f:
