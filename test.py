@@ -1,6 +1,6 @@
 import pandas as pd
-columns = ["Модель", "Москва", "Санкт-Петербург", "Новосибирск", "Товары в пути", "Дата"]
+df = pd.read_excel("ACS.xlsx")
 
-df = pd.DataFrame(index = columns)
-
-
+pd.set_option("display.mi", 5)
+# print(df)
+df.to_excel("ACS_2.xlsx")
