@@ -1,8 +1,8 @@
 import requests
-import lxml
 import pandas as pd
 import re
 from bs4 import BeautifulSoup
+from styleframe import StyleFrame, Styler
 
 # ACS links
 NNZ_CONTROLLERS = "https://nnz-ipc.ru/catalogue/automation/controllers/?pa=100"
@@ -91,7 +91,29 @@ parsing(PROM_PC_list)
 df2 = pd.DataFrame(WH_List, index= model_list, columns= ["Склад", "Количество", "Тип оборудования"], dtype="string")
 df2.index.name = "Модель"
 
-with pd.ExcelWriter("NNZ_warehouse.xlsx") as writer:
+with pd.ExcelWriter("NNZ_warehouse.xls") as writer:
     df1.to_excel(writer, sheet_name="АСУТП")
     df2.to_excel(writer, sheet_name="Пром ПК")
 
+# change the style
+df1 = pd.read_excel("NNZ_warehouse.xls", sheet_name="АСУТП", engine="openpyxl")
+df2 = pd.read_excel("NNZ_warehouse.xls", sheet_name="Пром ПК", engine="openpyxl")
+excel_writer = StyleFrame.ExcelWriter("NNZ_warehouse.xlsx")
+sf1 = StyleFrame(df1)
+sf2 = StyleFrame(df2)
+st = Styler(horizontal_alignment="left")
+
+col_style_dict = {
+    "Модель": "34",
+    "Склад": "19",
+    "Количество": "14.5",
+    "Тип оборудования": "25",
+}
+
+sf1.set_column_width_dict(col_style_dict)
+sf1.apply_column_style(["Модель", "Склад", "Тип оборудования"], st)
+sf2.set_column_width_dict(col_style_dict)
+sf2.apply_column_style(["Модель", "Склад", "Тип оборудования"], st)
+sf1.to_excel(excel_writer=excel_writer, columns_and_rows_to_freeze='A1', sheet_name="АСУТП")
+sf2.to_excel(excel_writer=excel_writer, columns_and_rows_to_freeze='A1', sheet_name="Пром ПК")
+excel_writer.save()
